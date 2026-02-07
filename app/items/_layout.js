@@ -1,10 +1,29 @@
 import { Stack } from "expo-router";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function ItemsLayout() {
+  const { colors } = useTheme();
+
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false}} />
-      <Stack.Screen name="[id]" options={{ title: "Détails" }} />
+    <Stack
+      screenOptions={{
+        headerStyle: { 
+          backgroundColor: colors.primary 
+        },
+        headerTintColor: colors.text,
+        headerTitleStyle: { 
+          fontWeight: "700" 
+        },
+      }}
+    >
+      <Stack.Screen 
+        name="menu" 
+        options={{ headerShown: false }} 
+      />
+      <Stack.Screen 
+        name="[id]" 
+        options={{ title: "Détails" }} 
+      />
     </Stack>
   );
 }

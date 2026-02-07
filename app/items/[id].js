@@ -16,7 +16,7 @@ export default function ItemDetails() {
     <>
       <Stack.Screen 
         options={{ 
-          title: "Retour" 
+          title: "" 
         }} 
       />
       

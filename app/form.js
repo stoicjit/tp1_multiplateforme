@@ -32,7 +32,7 @@ export default function Formulaire() {
                 <Title>Laisser un avis</Title>
 
                 <View>
-                    <AppText>Email <AppText style={{ color: "red" }}> *</AppText>
+                    <AppText>Email<AppText style={{ color: "red" }}>*</AppText>
                     </AppText>
                     <AppInput
                         value={email}
@@ -51,7 +51,7 @@ export default function Formulaire() {
 
                 <View>
                     <AppText>Avis
-                        <AppText style={{ color: "red" }}> *</AppText>
+                        <AppText style={{ color: "red" }}>*</AppText>
                     </AppText>
                     <AppInput
                         value={review}

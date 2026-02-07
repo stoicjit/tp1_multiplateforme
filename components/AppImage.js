@@ -1,22 +1,16 @@
-import { Image, Platform } from "react-native";
+import { Image } from "react-native";
+import { useResponsive } from "../hooks/useResponsive";
 
 export function AppImage({ source }) {
+  const { isMobile } = useResponsive();
+
   return (
     <Image
       source={source}
       style={{
-        width: Platform.select({
-          web: "100%",
-          default: "100%",
-        }),
-        height: Platform.select({
-          web: "100%",
-          default: 290,
-        }),
-        borderRadius: Platform.select({
-          web: 24,
-          default: 16,
-        }),
+        width: "100%",
+        height: isMobile ? 290 : "100%",
+        borderRadius: isMobile ? 16 : 24,
       }}
       resizeMode="cover"
     />

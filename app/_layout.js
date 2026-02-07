@@ -5,7 +5,7 @@ import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
 
 
-// We need a separate component to use the theme hook
+
 function ThemedTabs() {
   const { colors } = useTheme();
 
@@ -24,7 +24,6 @@ function ThemedTabs() {
           backgroundColor: colors.background,
           borderTopColor: colors.border,
         },
-        // Add toggle button to ALL screens
         headerRight: () => <ThemeToggle />,
       }}
     >
