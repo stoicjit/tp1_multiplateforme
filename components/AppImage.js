@@ -9,7 +9,7 @@ export function AppImage({ source }) {
       source={source}
       style={{
         width: "100%",
-        height: isMobile ? 290 : "100%",
+        height: isMobile ? 290 : "90%",
         borderRadius: isMobile ? 16 : 24,
       }}
       resizeMode="cover"

@@ -30,7 +30,7 @@ export default function ItemsList() {
   ];
 
   return (
-    <Screen>
+    <Screen scrollable={false}>
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id}

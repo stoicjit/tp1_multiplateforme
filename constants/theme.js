@@ -14,8 +14,8 @@ export const COLORS = {
   dark: {
     background: '#121212',
     surface: '#1E1E1E',
-    primary: '#D4A574',      // light coffee
-    secondary: '#6B4423',    // dark coffee
+    primary: '#D4A574',      
+    secondary: '#6B4423',   
     text: '#FFFFFF',
     textSecondary: '#AAAAAA',
     border: '#333333',

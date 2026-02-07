@@ -10,7 +10,7 @@ export function Title({ children, style }) {
         { 
           fontSize: 24, 
           fontWeight: "bold", 
-          color: colors.text 
+          color: colors.text,
         }, 
         style
       ]}

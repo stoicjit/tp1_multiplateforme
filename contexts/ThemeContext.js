@@ -6,10 +6,10 @@ import { COLORS } from '../constants/theme';
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  const systemColorScheme = useColorScheme(); // 'light' or 'dark'
+  const systemColorScheme = useColorScheme(); // 'light' ou 'dark'
   const [theme, setTheme] = useState(systemColorScheme || 'light');
 
-  // Load saved theme on mount
+  // Load le theme
   useEffect(() => {
     loadTheme();
   }, []);

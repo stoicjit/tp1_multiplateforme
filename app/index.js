@@ -44,13 +44,6 @@ export default function HomeScreen() {
             chaque boisson est préparée avec passion et soin.
           </AppText>
 
-          {/* <AppText style={{ fontWeight: "700", fontSize: 18, marginBottom: 4 }}>
-            ☕ Boisson du jour
-          </AppText>
-
-          <AppText>Cappuccino vanille — doux, chaud et réconfortant.</AppText> */}
-
-          {/* Buttons */}
           <View style={{ 
             flexDirection: isMobile ? 'column' : 'row',
             gap: 24, 
