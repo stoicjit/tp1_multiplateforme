@@ -1,4 +1,3 @@
-import { Link } from "expo-router";
 import { Screen } from "../components/Screen";
 import { Title } from "../components/Title";
 import { AppText } from "../components/AppText";
