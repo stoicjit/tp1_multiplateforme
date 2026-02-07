@@ -1,31 +1,25 @@
-import { TextInput, StyleSheet } from "react-native";
+import { TextInput } from "react-native";
+import { useTheme } from "../contexts/ThemeContext";
 
 export function AppInput({ showError, style, ...props }) {
+  const { colors } = useTheme();
+
   return (
     <TextInput
-      {...props}
       style={[
-        styles.input,
-        showError && styles.inputError,
+        {
+          borderWidth: 1,
+          borderColor: showError ? colors.error : colors.border,
+          backgroundColor: colors.surface,
+          color: colors.text,
+          padding: 12,
+          borderRadius: 8,
+          fontSize: 16,
+        },
         style,
       ]}
+      placeholderTextColor={colors.textSecondary}
+      {...props}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    width:"100vh",
-    marginTop: 4,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 12,
-    borderRadius: 8,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  inputError: {
-    borderColor: '#dc3545',
-  },
-});
-

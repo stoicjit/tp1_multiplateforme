@@ -1,34 +1,28 @@
-import { View, ScrollView, Platform } from "react-native";
+import { SafeAreaView, View } from "react-native";
+import { useTheme } from "../contexts/ThemeContext";
+import { useResponsive } from "../hooks/useResponsive";
 
 export function Screen({ children }) {
-  if (Platform.OS === "web") {
-    return (
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          flexDirection: "row", 
-          padding: 36,
-          gap: 80,
-          backgroundColor: "#e8c5a5",
-          paddingTop: 60,
-          minHeight: "100%",
+  const { colors } = useTheme();
+  const { isDesktop } = useResponsive();
 
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <View 
+        style={{ 
+          flex: 1,
+          padding: 20,
+          backgroundColor: colors.background,
+          // Center content on desktop with max width
+          ...(isDesktop && {
+            maxWidth: 1200,
+            width: '100%',
+            alignSelf: 'center',
+          }),
         }}
       >
         {children}
-      </ScrollView>
-    );
-  }
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        padding: 24,
-        backgroundColor: "#e8c5a5",
-      }}
-    >
-      {children}
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }

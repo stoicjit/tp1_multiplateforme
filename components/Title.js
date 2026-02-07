@@ -1,9 +1,21 @@
-import { AppText } from "./AppText";
+import { Text } from "react-native";
+import { useTheme } from "../contexts/ThemeContext";
 
-export function Title({ children }) {
+export function Title({ children, style }) {
+  const { colors } = useTheme();
+
   return (
-    <AppText style={{ fontSize: 20, fontWeight: "700"}}>
+    <Text 
+      style={[
+        { 
+          fontSize: 24, 
+          fontWeight: "bold", 
+          color: colors.text 
+        }, 
+        style
+      ]}
+    >
       {children}
-    </AppText>
+    </Text>
   );
 }

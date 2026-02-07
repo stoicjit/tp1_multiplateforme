@@ -1,42 +1,27 @@
-import { Pressable, Text, StyleSheet } from "react-native";
+import { Pressable } from "react-native";
+import { AppText } from "./AppText";
+import { useTheme } from "../contexts/ThemeContext";
 
-export function AppButton({
-  title,
-  onPress,
-  disabled,
-  style,
-  textStyle,
-}) {
+export function AppButton({ title, onPress, disabled = false }) {
+  const { colors } = useTheme();
+
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      style={[
-        styles.button,
-        disabled && styles.buttonDisabled,
-        style,
-      ]}
+      style={{
+        backgroundColor: disabled ? colors.buttonDisabled : colors.primary,
+        padding: 14,
+        borderRadius: 8,
+        alignItems: "center",
+      }}
     >
-      <Text style={[styles.text, textStyle]}>
+      <AppText style={{ 
+        color: disabled ? colors.textSecondary : '#FFFFFF',
+        fontWeight: "600" 
+      }}>
         {title}
-      </Text>
+      </AppText>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    paddingVertical: 20,
-    paddingHorizontal: 24,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: "#591F0B",
-  },
-  buttonDisabled: {
-    backgroundColor: "#ccc",
-  },
-  text: {
-    color: "white",
-    fontWeight: "700",
-  },
-});

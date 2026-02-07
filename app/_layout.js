@@ -1,51 +1,69 @@
 import { Tabs } from "expo-router";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { ThemeProvider } from "../contexts/ThemeContext";
+import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
+import { ThemeToggle } from "../components/ThemeToggle";
+
+
+// We need a separate component to use the theme hook
+function ThemedTabs() {
+  const { colors } = useTheme();
+
+  return (
+    <Tabs
+      screenOptions={{
+        headerShown: true,
+        headerStyle: { backgroundColor: colors.primary },
+        headerTintColor: colors.text,
+        headerTitleStyle: { fontWeight: "700" },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarShowLabel: false,   
+        headerTitleAlign: "center",
+        tabBarStyle: { 
+          backgroundColor: colors.background,
+          borderTopColor: colors.border,
+        },
+        // Add toggle button to ALL screens
+        headerRight: () => <ThemeToggle />,
+      }}
+    >
+      <Tabs.Screen
+        name="form"
+        options={{
+          title: "Review",
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="form" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="coffee" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="items"
+        options={{
+          title: "Menu",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="list" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+
+  );
+}
 
 export default function TabsLayout() {
   return (
     <ThemeProvider>
-      <Tabs
-        screenOptions={{
-          headerShown: true,
-          headerStyle: { backgroundColor: "#591F0B"},
-          headerTintColor: "#e8c5a5",
-          headerTitleStyle: { fontWeight: "700" },
-          tabBarActiveTintColor: "#591F0B",
-          tabBarInactiveTintColor: "#666",
-          tabBarShowLabel: false,   
-          headerTitleAlign: "center",
-        }}
-      >
-        <Tabs.Screen
-          name="form"
-          options={{
-            title: "Review",
-            tabBarIcon: ({ color, size }) => (
-              <AntDesign name="form" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: "Home",
-            tabBarIcon: ({ color, size }) => (
-              <FontAwesome5 name="coffee" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="items"
-          options={{
-            title: "Menu",
-            tabBarIcon: ({ color, size }) => (
-              <FontAwesome5 name="list" size={size} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
+      <ThemedTabs />
     </ThemeProvider>
   );
 }
