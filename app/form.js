@@ -1,183 +1,325 @@
 import { Screen } from "../components/Screen";
 import { Title } from "../components/Title";
 import { AppText } from "../components/AppText";
-import { useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, ActivityIndicator, FlatList, Alert, Platform, Pressable } from 'react-native';
 import { AppButton, AppInput } from "../components";
 import { useTheme } from "../contexts/ThemeContext";
-import { quotesApi } from "../services/api";
-import { QuoteSchema, ReviewFormSchema } from "../schemas/apiSchemas";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { reviewsApi } from "../services/reviewsApi";
+import { ReviewFormSchema } from "../schemas/reviewSchemas";
+import { ReviewItem } from "../features/reviews/ReviewItem";
 
-export default function Formulaire() {
-    const { colors } = useTheme();
-    const [email, setEmail] = useState('');
-    const [review, setReview] = useState('');
+export default function ReviewsForm() {
+  const { colors } = useTheme();
+  const router = useRouter();
+  const { id: editId } = useLocalSearchParams();
+  
+  // Form state
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [rating, setRating] = useState(5);
+  const [review, setReview] = useState('');
+  const [formLoading, setFormLoading] = useState(false);
 
-    const [quote, setQuote] = useState(null);
-    const [quoteLoading, setQuoteLoading] = useState(false);
-    const [quoteError, setQuoteError] = useState(null);
+  // Reviews list state
+  const [reviews, setReviews] = useState([]);
+  const [listLoading, setListLoading] = useState(true);
+  const [listError, setListError] = useState(null);
 
-    // validation en live
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const isValidReview = review.length >= 10;
+  // Validation states
+  const isValidUsername = username.length >= 2;
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidReview = review.length >= 10;
+  const isValidRating = rating >= 1 && rating <= 5;
 
-    const showEmailError = email.length > 0 && !isValidEmail;
-    const showReviewError = review.length > 0 && !isValidReview;
+  const showUsernameError = username.length > 0 && !isValidUsername;
+  const showEmailError = email.length > 0 && !isValidEmail;
+  const showReviewError = review.length > 0 && !isValidReview;
 
-    const isFormValid = isValidEmail && isValidReview;
+  const isFormValid = isValidUsername && isValidEmail && isValidReview && isValidRating;
 
-    //Zod
-    const handleSubmit = () => {
-        const result = ReviewFormSchema.safeParse({ email, review });
+  const isEditMode = !!editId;
 
-        if (!result.success) {
-            console.error('Form validation failed:', result.error);
-            alert('Veuillez corriger les erreurs');
-            return;
+  // Fetch all reviews
+  const fetchReviews = async () => {
+    setListLoading(true);
+    setListError(null);
+    
+    const result = await reviewsApi.getAllReviews();
+    
+    if (result.error) {
+      setListError(result.error);
+      setReviews([]);
+    } else {
+      setReviews(result.data || []);
+    }
+    
+    setListLoading(false);
+  };
+
+  // Fetch single review for editing
+  const fetchReviewForEdit = async () => {
+    if (!editId) return;
+    
+    setFormLoading(true);
+    const result = await reviewsApi.getReviewById(editId);
+    
+    if (result.error) {
+      Alert.alert('Erreur', result.error);
+      router.push('/form');
+    } else if (result.data) {
+      setUsername(result.data.username);
+      setEmail(result.data.email);
+      setRating(result.data.rating);
+      setReview(result.data.review);
+    }
+    
+    setFormLoading(false);
+  };
+
+  useEffect(() => {
+    if (isEditMode) {
+      fetchReviewForEdit();
+    } else {
+      fetchReviews();
+    }
+  }, [editId]);
+
+  // Handle form submission
+  const handleSubmit = async () => {
+    const formData = { username, email, rating, review };
+    const validation = ReviewFormSchema.safeParse(formData);
+
+    if (!validation.success) {
+      console.error('Form validation failed:', validation.error);
+      Alert.alert('Erreur', 'Veuillez corriger les erreurs dans le formulaire');
+      return;
+    }
+
+    setFormLoading(true);
+
+    let result;
+    if (isEditMode) {
+      result = await reviewsApi.updateReview(editId, validation.data);
+    } else {
+      result = await reviewsApi.createReview(validation.data);
+    }
+
+    setFormLoading(false);
+
+    if (result.error) {
+      Alert.alert('Erreur', result.error);
+    } else {
+      if (isEditMode) {
+        // For edit mode, go back to create mode
+        router.push('/form');
+        if (Platform.OS !== 'web') {
+          Alert.alert('Succès', 'Avis modifié avec succès !');
         }
-
-        console.log('Valid data:', result.data);
-        setReview('');
+      } else {
+        // For create mode, reset form and refresh
+        setUsername('');
         setEmail('');
-        alert('Formulaire soumis avec succès !');
-    };
-
-    // Fetch quote de api
-    const fetchQuote = async () => {
-        setQuoteLoading(true);
-        setQuoteError(null);
-        try {
-            const data = await quotesApi.getRandomQuote();
-
-            // Validate avec Zod
-            const result = QuoteSchema.safeParse(data);
-
-            if (!result.success) {
-                console.error('Quote validation error:', result.error);
-                setQuoteError('Données invalides reçues de l\'API');
-                setQuote(null);
-            } else {
-                setQuote(result.data);
-            }
-        } catch (err) {
-            setQuoteError(err.message);
-            setQuote(null);
-        } finally {
-            setQuoteLoading(false);
+        setRating(5);
+        setReview('');
+        
+        await fetchReviews();
+        
+        if (Platform.OS !== 'web') {
+          Alert.alert('Succès', 'Avis soumis avec succès !');
         }
-    };
+      }
+    }
+  };
 
+  // Handle edit
+  const handleEdit = (reviewToEdit) => {
+    router.push(`/form?id=${reviewToEdit.id}`);
+  };
+
+  // Handle delete
+  const handleDelete = async (reviewId) => {
+    const result = await reviewsApi.deleteReview(reviewId);
+    
+    if (result.error) {
+      Alert.alert('Erreur', result.error);
+    } else {
+      await fetchReviews();
+      
+      if (Platform.OS !== 'web') {
+        Alert.alert('Succès', 'Avis supprimé avec succès !');
+      }
+    }
+  };
+
+  // Render star selector
+  const renderStarSelector = () => {
     return (
-        <Screen scrollable={true}>
-            <View style={{ gap: 36 }}>
-                <Title>Laisser un avis</Title>
-
-                <View>
-                    <AppText>Email <AppText style={{ color: colors.error }}> *</AppText>
-                    </AppText>
-                    <AppInput
-                        value={email}
-                        onChangeText={setEmail}
-                        placeholder="exemple@email.com"
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        showError={showEmailError}
-                    />
-                    {showEmailError && (
-                        <AppText style={{ color: colors.error, fontSize: 12 }}>
-                            Email invalide
-                        </AppText>
-                    )}
-                </View>
-
-                <View>
-                    <AppText>Avis
-                        <AppText style={{ color: colors.error }}> *</AppText>
-                    </AppText>
-                    <AppInput
-                        value={review}
-                        onChangeText={setReview}
-                        placeholder="Review..."
-                        showError={showReviewError}
-                        multiline
-                        numberOfLines={4}
-                        textAlignVertical="top"
-                        style={{ height: 100 }}
-                    />
-
-                    {showReviewError && (
-                        <AppText style={{ color: colors.error, fontSize: 12 }}>
-                            Le review doit contenir au moins 10 caractères
-                        </AppText>
-                    )}
-                </View>
-
-                <AppButton
-                    disabled={!isFormValid}
-                    onPress={handleSubmit}
-                    title={isFormValid ? 'Soumettre' : 'Veuillez remplir les champs'}
-                />
-
-                <View style={{ 
-                    height: 1, 
-                    backgroundColor: colors.border,
-                    marginVertical: 12,
-                }} />
-
-                <View style={{ gap: 16 }}>
-                    <Title style={{ fontSize: 20 }}>☕ Besoin d'inspiration?</Title>
-                    
-                    <AppButton
-                        onPress={fetchQuote}
-                        title={quote ? "Nouvelle citation" : "Obtenir une citation"}
-                    />
-
-                    {quoteLoading && (
-                        <View style={{ padding: 20, alignItems: 'center' }}>
-                            <ActivityIndicator size="large" color={colors.primary} />
-                            <AppText style={{ marginTop: 12 }}>Chargement...</AppText>
-                        </View>
-                    )}
-
-                    {quoteError && (
-                        <View style={{ 
-                            padding: 16, 
-                            backgroundColor: colors.error + '20',
-                            borderRadius: 8,
-                        }}>
-                            <AppText style={{ color: colors.error }}>
-                                 Erreur: {quoteError}
-                            </AppText>
-                        </View>
-                    )}
-
-                    {quote && !quoteLoading && (
-                        <View style={{
-                            padding: 20,
-                            backgroundColor: colors.surface,
-                            borderRadius: 12,
-                            borderLeftWidth: 4,
-                            borderLeftColor: colors.primary,
-                        }}>
-                            <AppText style={{ 
-                                fontSize: 18, 
-                                fontStyle: 'italic',
-                                marginBottom: 12,
-                                lineHeight: 26,
-                            }}>
-                                "{quote.content}"
-                            </AppText>
-                            <AppText style={{ 
-                                fontSize: 14, 
-                                color: colors.textSecondary,
-                                textAlign: 'right',
-                            }}>
-                                — {quote.author}
-                            </AppText>
-                        </View>
-                    )}
-                </View>
-            </View>
-        </Screen>
+      <View style={{ flexDirection: 'row', gap: 8, marginVertical: 8 }}>
+        {[1, 2, 3, 4, 5].map(star => (
+          <Pressable
+            key={star}
+            onPress={() => setRating(star)}
+            style={{
+              padding: 8,
+              backgroundColor: star <= rating ? colors.primary + '20' : colors.surface,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: star <= rating ? colors.primary : colors.border,
+            }}
+          >
+            <AppText style={{ fontSize: 24 }}>
+              {star <= rating ? '⭐' : '☆'}
+            </AppText>
+          </Pressable>
+        ))}
+      </View>
     );
+  };
+
+  return (
+    <Screen scrollable={true}>
+      <View style={{ gap: 24 }}>
+        <Title>{isEditMode ? 'Modifier l\'avis' : 'Laisser un avis'}</Title>
+
+        {formLoading && isEditMode && (
+          <View style={{ padding: 20, alignItems: 'center' }}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        )}
+
+        {!formLoading && (
+          <>
+            <View>
+              <AppText>Nom d'utilisateur <AppText style={{ color: colors.error }}> *</AppText></AppText>
+              <AppInput
+                value={username}
+                onChangeText={setUsername}
+                placeholder="Votre nom"
+                showError={showUsernameError}
+              />
+              {showUsernameError && (
+                <AppText style={{ color: colors.error, fontSize: 12 }}>
+                  Le nom doit contenir au moins 2 caractères
+                </AppText>
+              )}
+            </View>
+
+            <View>
+              <AppText>Email <AppText style={{ color: colors.error }}> *</AppText></AppText>
+              <AppInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder="exemple@email.com"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                showError={showEmailError}
+              />
+              {showEmailError && (
+                <AppText style={{ color: colors.error, fontSize: 12 }}>
+                  Email invalide
+                </AppText>
+              )}
+            </View>
+
+            <View>
+              <AppText>Note <AppText style={{ color: colors.error }}> *</AppText></AppText>
+              {renderStarSelector()}
+            </View>
+
+            <View>
+              <AppText>Avis <AppText style={{ color: colors.error }}> *</AppText></AppText>
+              <AppInput
+                value={review}
+                onChangeText={setReview}
+                placeholder="Votre avis..."
+                showError={showReviewError}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+                style={{ height: 100 }}
+              />
+              {showReviewError && (
+                <AppText style={{ color: colors.error, fontSize: 12 }}>
+                  L'avis doit contenir au moins 10 caractères
+                </AppText>
+              )}
+            </View>
+
+            <AppButton
+              disabled={!isFormValid || formLoading}
+              onPress={handleSubmit}
+              title={
+                formLoading 
+                  ? 'Envoi...' 
+                  : isFormValid 
+                    ? (isEditMode ? 'Modifier' : 'Soumettre')
+                    : 'Veuillez remplir tous les champs'
+              }
+            />
+
+            {isEditMode && (
+              <AppButton
+                onPress={() => router.push('/form')}
+                title="Annuler"
+              />
+            )}
+          </>
+        )}
+
+        {!isEditMode && (
+          <>
+            <View style={{ 
+              height: 1, 
+              backgroundColor: colors.border,
+              marginVertical: 12,
+            }} />
+
+            <Title style={{ fontSize: 20 }}>📝 Avis des clients</Title>
+
+            {listLoading && (
+              <View style={{ padding: 20, alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <AppText style={{ marginTop: 12 }}>Chargement des avis...</AppText>
+              </View>
+            )}
+
+            {listError && (
+              <View style={{ 
+                padding: 16, 
+                backgroundColor: colors.error + '20',
+                borderRadius: 8,
+              }}>
+                <AppText style={{ color: colors.error, marginBottom: 12 }}>
+                  ❌ Erreur: {listError}
+                </AppText>
+                <AppButton title="Réessayer" onPress={fetchReviews} />
+              </View>
+            )}
+
+            {!listLoading && !listError && (
+              <FlatList
+                data={reviews}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <ReviewItem
+                    review={item}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                )}
+                ListEmptyComponent={
+                  <AppText style={{ textAlign: 'center', marginTop: 20 }}>
+                    Aucun avis pour le moment. Soyez le premier à en laisser un !
+                  </AppText>
+                }
+                scrollEnabled={false}
+              />
+            )}
+          </>
+        )}
+      </View>
+    </Screen>
+  );
 }
