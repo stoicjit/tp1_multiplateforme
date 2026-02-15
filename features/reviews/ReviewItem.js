@@ -7,13 +7,12 @@ export function ReviewItem({ review, onEdit, onDelete }) {
 
   const handleDelete = () => {
     if (Platform.OS === 'web') {
-      // Use browser's native confirm dialog on web
       const confirmed = window.confirm('Êtes-vous sûr de vouloir supprimer cet avis ?');
       if (confirmed) {
         onDelete(review.id);
       }
     } else {
-      // Use React Native Alert on mobile
+      
       Alert.alert(
         'Confirmer la suppression',
         'Êtes-vous sûr de vouloir supprimer cet avis ?',
@@ -86,7 +85,7 @@ export function ReviewItem({ review, onEdit, onDelete }) {
           }}
         >
           <AppText style={{ color: colors.primary, fontWeight: '600' }}>
-            ✏️ Modifier
+             Modifier
           </AppText>
         </Pressable>
         
@@ -100,7 +99,7 @@ export function ReviewItem({ review, onEdit, onDelete }) {
           }}
         >
           <AppText style={{ color: colors.error, fontWeight: '600' }}>
-            🗑️ Supprimer
+             Supprimer
           </AppText>
         </Pressable>
       </View>

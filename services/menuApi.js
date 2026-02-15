@@ -3,7 +3,7 @@ import { MenuItemSchema, MenuItemsListSchema } from '../schemas/menuSchemas';
 
 export const menuApi = {
   /**
-   * GET all menu items
+   * GET tout les items
    * @returns {Promise<{data: Array, error: string|null, loading: boolean}>}
    */
   getAllItems: async () => {
@@ -19,7 +19,7 @@ export const menuApi = {
         return { data: null, error: error.message };
       }
 
-      // Validate with Zod
+      // Validation avec Zod
       const validation = MenuItemsListSchema.safeParse(data);
       
       if (!validation.success) {
@@ -39,7 +39,7 @@ export const menuApi = {
 
   /**
    * GET single menu item by ID
-   * @param {string} id - Item UUID
+   * @param {string} id 
    * @returns {Promise<{data: Object|null, error: string|null}>}
    */
   getItemById: async (id) => {
@@ -55,7 +55,7 @@ export const menuApi = {
         return { data: null, error: error.message };
       }
 
-      // Validate with Zod
+      // Validation avec Zod
       const validation = MenuItemSchema.safeParse(data);
       
       if (!validation.success) {

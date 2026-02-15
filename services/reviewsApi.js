@@ -22,7 +22,7 @@ export const reviewsApi = {
         return { data: null, error: error.message };
       }
 
-      // Validate with Zod
+      // Validatation avec Zod  
       const validation = ReviewsListSchema.safeParse(data);
       
       if (!validation.success) {
@@ -41,8 +41,8 @@ export const reviewsApi = {
   },
 
   /**
-   * GET single review by ID
-   * @param {string} id - Review UUID
+   * GET un review par ID
+   * @param {string} id 
    * @returns {Promise<{data: Object|null, error: string|null}>}
    */
   getReviewById: async (id) => {
@@ -58,7 +58,7 @@ export const reviewsApi = {
         return { data: null, error: error.message };
       }
 
-      // Validate with Zod
+      // Validation avec Zod
       const validation = ReviewSchema.safeParse(data);
       
       if (!validation.success) {
@@ -77,13 +77,13 @@ export const reviewsApi = {
   },
 
   /**
-   * POST - Create new review
+   * POST - Creer review
    * @param {Object} reviewData - {username, email, rating, review}
    * @returns {Promise<{data: Object|null, error: string|null}>}
    */
   createReview: async (reviewData) => {
     try {
-      // Validate input with Zod
+      // Validation avec Zod
       const inputValidation = ReviewFormSchema.safeParse(reviewData);
       
       if (!inputValidation.success) {
@@ -105,7 +105,7 @@ export const reviewsApi = {
         return { data: null, error: error.message };
       }
 
-      // Validate response with Zod
+      // Validation avec Zod
       const responseValidation = ReviewSchema.safeParse(data);
       
       if (!responseValidation.success) {
@@ -124,14 +124,14 @@ export const reviewsApi = {
   },
 
   /**
-   * PUT/PATCH - Update existing review
-   * @param {string} id - Review UUID
+   * PUT/PATCH - Update review
+   * @param {string} id - 
    * @param {Object} reviewData - {username, email, rating, review}
    * @returns {Promise<{data: Object|null, error: string|null}>}
    */
   updateReview: async (id, reviewData) => {
     try {
-      // Validate input with Zod
+      // Validation avec Zod
       const inputValidation = ReviewFormSchema.safeParse(reviewData);
       
       if (!inputValidation.success) {
@@ -157,7 +157,7 @@ export const reviewsApi = {
         return { data: null, error: error.message };
       }
 
-      // Validate response with Zod
+      // Validation avec Zod
       const responseValidation = ReviewSchema.safeParse(data);
       
       if (!responseValidation.success) {
@@ -176,8 +176,8 @@ export const reviewsApi = {
   },
 
   /**
-   * DELETE - Remove review
-   * @param {string} id - Review UUID
+   * DELETE  review
+   * @param {string} id 
    * @returns {Promise<{success: boolean, error: string|null}>}
    */
   deleteReview: async (id) => {

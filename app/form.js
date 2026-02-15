@@ -41,7 +41,7 @@ export default function ReviewsForm() {
 
   const isEditMode = !!editId;
 
-  // Fetch all reviews
+  // Fetch tout les reviews
   const fetchReviews = async () => {
     setListLoading(true);
     setListError(null);
@@ -58,7 +58,7 @@ export default function ReviewsForm() {
     setListLoading(false);
   };
 
-  // Fetch single review for editing
+  // Fetch un review pour edit
   const fetchReviewForEdit = async () => {
     if (!editId) return;
     
@@ -86,7 +86,6 @@ export default function ReviewsForm() {
     }
   }, [editId]);
 
-  // Handle form submission
   const handleSubmit = async () => {
     const formData = { username, email, rating, review };
     const validation = ReviewFormSchema.safeParse(formData);
@@ -112,13 +111,11 @@ export default function ReviewsForm() {
       Alert.alert('Erreur', result.error);
     } else {
       if (isEditMode) {
-        // For edit mode, go back to create mode
         router.push('/form');
         if (Platform.OS !== 'web') {
           Alert.alert('Succès', 'Avis modifié avec succès !');
         }
       } else {
-        // For create mode, reset form and refresh
         setUsername('');
         setEmail('');
         setRating(5);
@@ -133,12 +130,12 @@ export default function ReviewsForm() {
     }
   };
 
-  // Handle edit
+
   const handleEdit = (reviewToEdit) => {
     router.push(`/form?id=${reviewToEdit.id}`);
   };
 
-  // Handle delete
+
   const handleDelete = async (reviewId) => {
     const result = await reviewsApi.deleteReview(reviewId);
     
@@ -153,7 +150,6 @@ export default function ReviewsForm() {
     }
   };
 
-  // Render star selector
   const renderStarSelector = () => {
     return (
       <View style={{ flexDirection: 'row', gap: 8, marginVertical: 8 }}>

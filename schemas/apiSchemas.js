@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Schema por api
+// Schema pour api
 export const QuoteSchema = z.object({
   _id: z.string(),
   content: z.string(),

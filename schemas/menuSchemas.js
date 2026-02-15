@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Schema for a single menu item from database
+// Schema pour un item
 export const MenuItemSchema = z.object({
   id: z.string().uuid(),
   title: z.string().min(1, 'Titre requis'),
@@ -10,5 +10,5 @@ export const MenuItemSchema = z.object({
   created_at: z.string().optional(),
 });
 
-// Schema for list of menu items
+// Schema pout tout le menu
 export const MenuItemsListSchema = z.array(MenuItemSchema);

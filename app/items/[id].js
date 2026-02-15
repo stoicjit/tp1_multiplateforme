@@ -38,7 +38,7 @@ export default function ItemDetails() {
     fetchItem();
   }, [id]);
 
-  // Loading state
+
   if (loading) {
     return (
       <>
@@ -53,7 +53,6 @@ export default function ItemDetails() {
     );
   }
 
-  // Error state
   if (error || !item) {
     return (
       <>
@@ -61,7 +60,7 @@ export default function ItemDetails() {
         <Screen>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
             <AppText style={{ color: colors.error, marginBottom: 16, textAlign: 'center' }}>
-              ❌ {error || "Item introuvable"}
+              {error || "Item introuvable"}
             </AppText>
           </View>
         </Screen>
@@ -69,7 +68,7 @@ export default function ItemDetails() {
     );
   }
 
-  // Success state
+
   return (
     <>
       <Stack.Screen options={{ title: item.title }} />

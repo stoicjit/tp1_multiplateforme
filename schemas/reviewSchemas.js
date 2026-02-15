@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Schema for form input (creating/editing)
+
 export const ReviewFormSchema = z.object({
   username: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
   email: z.string().email('Email invalide'),
@@ -8,7 +8,7 @@ export const ReviewFormSchema = z.object({
   review: z.string().min(10, 'L\'avis doit contenir au moins 10 caractères'),
 });
 
-// Schema for database response (includes id and timestamps)
+
 export const ReviewSchema = z.object({
   id: z.string().uuid(),
   username: z.string(),
@@ -19,5 +19,5 @@ export const ReviewSchema = z.object({
   updated_at: z.string().optional(),
 });
 
-// Schema for list of reviews
+
 export const ReviewsListSchema = z.array(ReviewSchema);
