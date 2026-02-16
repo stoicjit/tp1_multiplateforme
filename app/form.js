@@ -6,7 +6,7 @@ import { View, ActivityIndicator, FlatList, Alert, Platform, Pressable } from 'r
 import { AppButton, AppInput } from "../components";
 import { useTheme } from "../contexts/ThemeContext";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { reviewsApi } from "../services/reviewsApi";
+import { reviewsApi } from "../api/reviewsApi";
 import { ReviewFormSchema } from "../schemas/reviewSchemas";
 import { ReviewItem } from "../features/reviews/ReviewItem";
 

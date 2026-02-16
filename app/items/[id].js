@@ -8,7 +8,7 @@ import { AppText } from "../../components/AppText";
 import { AppButton } from "../../components/AppButton";
 import { useTheme } from "../../contexts/ThemeContext";
 
-import { menuApi } from "../../services/menuApi";
+import { menuApi } from "../../api/menuApi";
 
 export default function ItemDetails() {
   const { id } = useLocalSearchParams();
